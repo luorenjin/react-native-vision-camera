@@ -12,6 +12,8 @@
 namespace NitroModules { class ArrayBufferHolder; }
 // Forward declaration of `BinnedConstraint` to properly resolve imports.
 namespace margelo::nitro::camera { struct BinnedConstraint; }
+// Forward declaration of `CameraOrientation` to properly resolve imports.
+namespace margelo::nitro::camera { enum class CameraOrientation; }
 // Forward declaration of `CameraOutputConfiguration` to properly resolve imports.
 namespace margelo::nitro::camera { struct CameraOutputConfiguration; }
 // Forward declaration of `CameraSessionConfiguration` to properly resolve imports.
@@ -122,8 +124,6 @@ namespace margelo::nitro::camera { enum class MeteringMode; }
 namespace margelo::nitro::camera { enum class MirrorMode; }
 // Forward declaration of `NativeBuffer` to properly resolve imports.
 namespace margelo::nitro::camera { struct NativeBuffer; }
-// Forward declaration of `Orientation` to properly resolve imports.
-namespace margelo::nitro::camera { enum class Orientation; }
 // Forward declaration of `PhotoFile` to properly resolve imports.
 namespace margelo::nitro::camera { struct PhotoFile; }
 // Forward declaration of `PhotoHDRConstraint` to properly resolve imports.
@@ -142,6 +142,10 @@ namespace margelo::nitro::camera { enum class PreviewResizeMode; }
 namespace margelo::nitro::camera { struct PreviewStabilizationModeConstraint; }
 // Forward declaration of `Range` to properly resolve imports.
 namespace margelo::nitro::camera { struct Range; }
+// Forward declaration of `RecorderFileType` to properly resolve imports.
+namespace margelo::nitro::camera { enum class RecorderFileType; }
+// Forward declaration of `RecordingFinishedReason` to properly resolve imports.
+namespace margelo::nitro::camera { enum class RecordingFinishedReason; }
 // Forward declaration of `ResolutionBiasConstraint` to properly resolve imports.
 namespace margelo::nitro::camera { struct ResolutionBiasConstraint; }
 // Forward declaration of `ScannedObjectType` to properly resolve imports.
@@ -247,6 +251,7 @@ namespace VisionCamera { class HybridZoomGestureControllerSpec_cxx; }
 
 // Include C++ defined types
 #include "BinnedConstraint.hpp"
+#include "CameraOrientation.hpp"
 #include "CameraOutputConfiguration.hpp"
 #include "CameraSessionConfiguration.hpp"
 #include "CameraSessionConnection.hpp"
@@ -301,7 +306,6 @@ namespace VisionCamera { class HybridZoomGestureControllerSpec_cxx; }
 #include "MeteringMode.hpp"
 #include "MirrorMode.hpp"
 #include "NativeBuffer.hpp"
-#include "Orientation.hpp"
 #include "PhotoFile.hpp"
 #include "PhotoHDRConstraint.hpp"
 #include "PixelFormat.hpp"
@@ -311,6 +315,8 @@ namespace VisionCamera { class HybridZoomGestureControllerSpec_cxx; }
 #include "PreviewResizeMode.hpp"
 #include "PreviewStabilizationModeConstraint.hpp"
 #include "Range.hpp"
+#include "RecorderFileType.hpp"
+#include "RecordingFinishedReason.hpp"
 #include "ResolutionBiasConstraint.hpp"
 #include "ScannedObjectType.hpp"
 #include "SceneAdaptiveness.hpp"
@@ -574,6 +580,15 @@ namespace margelo::nitro::camera::bridge::swift {
   }
   inline Result_std__shared_ptr_Promise_void___ create_Result_std__shared_ptr_Promise_void___(const std::exception_ptr& error) noexcept {
     return Result<std::shared_ptr<Promise<void>>>::withError(error);
+  }
+  
+  // pragma MARK: Result<ListenerSubscription>
+  using Result_ListenerSubscription_ = Result<ListenerSubscription>;
+  inline Result_ListenerSubscription_ create_Result_ListenerSubscription_(const ListenerSubscription& value) noexcept {
+    return Result<ListenerSubscription>::withValue(value);
+  }
+  inline Result_ListenerSubscription_ create_Result_ListenerSubscription_(const std::exception_ptr& error) noexcept {
+    return Result<ListenerSubscription>::withError(error);
   }
   
   // pragma MARK: Result<WhiteBalanceGains>
@@ -900,6 +915,21 @@ namespace margelo::nitro::camera::bridge::swift {
   // pragma MARK: std::weak_ptr<HybridCameraVideoOutputSpec>
   using std__weak_ptr_HybridCameraVideoOutputSpec_ = std::weak_ptr<HybridCameraVideoOutputSpec>;
   inline std__weak_ptr_HybridCameraVideoOutputSpec_ weakify_std__shared_ptr_HybridCameraVideoOutputSpec_(const std::shared_ptr<HybridCameraVideoOutputSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: std::optional<RecorderFileType>
+  /**
+   * Specialized version of `std::optional<RecorderFileType>`.
+   */
+  using std__optional_RecorderFileType_ = std::optional<RecorderFileType>;
+  inline std::optional<RecorderFileType> create_std__optional_RecorderFileType_(const RecorderFileType& value) noexcept {
+    return std::optional<RecorderFileType>(value);
+  }
+  inline bool has_value_std__optional_RecorderFileType_(const std::optional<RecorderFileType>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline RecorderFileType get_std__optional_RecorderFileType_(const std::optional<RecorderFileType>& optional) noexcept {
+    return optional.value();
+  }
   
   // pragma MARK: std::shared_ptr<HybridCameraFrameOutputSpec>
   /**
@@ -1396,6 +1426,17 @@ namespace margelo::nitro::camera::bridge::swift {
     return Result<bool>::withError(error);
   }
   
+  // pragma MARK: std::vector<std::vector<std::shared_ptr<HybridCameraDeviceSpec>>>
+  /**
+   * Specialized version of `std::vector<std::vector<std::shared_ptr<HybridCameraDeviceSpec>>>`.
+   */
+  using std__vector_std__vector_std__shared_ptr_HybridCameraDeviceSpec___ = std::vector<std::vector<std::shared_ptr<HybridCameraDeviceSpec>>>;
+  inline std::vector<std::vector<std::shared_ptr<HybridCameraDeviceSpec>>> create_std__vector_std__vector_std__shared_ptr_HybridCameraDeviceSpec___(size_t size) noexcept {
+    std::vector<std::vector<std::shared_ptr<HybridCameraDeviceSpec>>> vector;
+    vector.reserve(size);
+    return vector;
+  }
+  
   // pragma MARK: std::function<void(const std::vector<std::shared_ptr<HybridCameraDeviceSpec>>& /* newDevices */)>
   /**
    * Specialized version of `std::function<void(const std::vector<std::shared_ptr<HybridCameraDeviceSpec>>&)>`.
@@ -1473,15 +1514,6 @@ namespace margelo::nitro::camera::bridge::swift {
   Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec__ create_Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec__(void* NON_NULL swiftClosureWrapper) noexcept;
   inline Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec___Wrapper wrap_Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec__(Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec__ value) noexcept {
     return Func_void_std__vector_std__shared_ptr_HybridCameraExtensionSpec___Wrapper(std::move(value));
-  }
-  
-  // pragma MARK: Result<ListenerSubscription>
-  using Result_ListenerSubscription_ = Result<ListenerSubscription>;
-  inline Result_ListenerSubscription_ create_Result_ListenerSubscription_(const ListenerSubscription& value) noexcept {
-    return Result<ListenerSubscription>::withValue(value);
-  }
-  inline Result_ListenerSubscription_ create_Result_ListenerSubscription_(const std::exception_ptr& error) noexcept {
-    return Result<ListenerSubscription>::withError(error);
   }
   
   // pragma MARK: Result<std::optional<std::shared_ptr<HybridCameraDeviceSpec>>>
@@ -1987,41 +2019,41 @@ namespace margelo::nitro::camera::bridge::swift {
   using std__weak_ptr_HybridLocationSpec_ = std::weak_ptr<HybridLocationSpec>;
   inline std__weak_ptr_HybridLocationSpec_ weakify_std__shared_ptr_HybridLocationSpec_(const std::shared_ptr<HybridLocationSpec>& strong) noexcept { return strong; }
   
-  // pragma MARK: std::optional<Orientation>
+  // pragma MARK: std::optional<CameraOrientation>
   /**
-   * Specialized version of `std::optional<Orientation>`.
+   * Specialized version of `std::optional<CameraOrientation>`.
    */
-  using std__optional_Orientation_ = std::optional<Orientation>;
-  inline std::optional<Orientation> create_std__optional_Orientation_(const Orientation& value) noexcept {
-    return std::optional<Orientation>(value);
+  using std__optional_CameraOrientation_ = std::optional<CameraOrientation>;
+  inline std::optional<CameraOrientation> create_std__optional_CameraOrientation_(const CameraOrientation& value) noexcept {
+    return std::optional<CameraOrientation>(value);
   }
-  inline bool has_value_std__optional_Orientation_(const std::optional<Orientation>& optional) noexcept {
+  inline bool has_value_std__optional_CameraOrientation_(const std::optional<CameraOrientation>& optional) noexcept {
     return optional.has_value();
   }
-  inline Orientation get_std__optional_Orientation_(const std::optional<Orientation>& optional) noexcept {
+  inline CameraOrientation get_std__optional_CameraOrientation_(const std::optional<CameraOrientation>& optional) noexcept {
     return optional.value();
   }
   
-  // pragma MARK: std::function<void(Orientation /* orientation */)>
+  // pragma MARK: std::function<void(CameraOrientation /* orientation */)>
   /**
-   * Specialized version of `std::function<void(Orientation)>`.
+   * Specialized version of `std::function<void(CameraOrientation)>`.
    */
-  using Func_void_Orientation = std::function<void(Orientation /* orientation */)>;
+  using Func_void_CameraOrientation = std::function<void(CameraOrientation /* orientation */)>;
   /**
-   * Wrapper class for a `std::function<void(Orientation / * orientation * /)>`, this can be used from Swift.
+   * Wrapper class for a `std::function<void(CameraOrientation / * orientation * /)>`, this can be used from Swift.
    */
-  class Func_void_Orientation_Wrapper final {
+  class Func_void_CameraOrientation_Wrapper final {
   public:
-    explicit Func_void_Orientation_Wrapper(std::function<void(Orientation /* orientation */)>&& func): _function(std::make_unique<std::function<void(Orientation /* orientation */)>>(std::move(func))) {}
+    explicit Func_void_CameraOrientation_Wrapper(std::function<void(CameraOrientation /* orientation */)>&& func): _function(std::make_unique<std::function<void(CameraOrientation /* orientation */)>>(std::move(func))) {}
     inline void call(int orientation) const noexcept {
-      _function->operator()(static_cast<Orientation>(orientation));
+      _function->operator()(static_cast<CameraOrientation>(orientation));
     }
   private:
-    std::unique_ptr<std::function<void(Orientation /* orientation */)>> _function;
+    std::unique_ptr<std::function<void(CameraOrientation /* orientation */)>> _function;
   } SWIFT_NONCOPYABLE;
-  Func_void_Orientation create_Func_void_Orientation(void* NON_NULL swiftClosureWrapper) noexcept;
-  inline Func_void_Orientation_Wrapper wrap_Func_void_Orientation(Func_void_Orientation value) noexcept {
-    return Func_void_Orientation_Wrapper(std::move(value));
+  Func_void_CameraOrientation create_Func_void_CameraOrientation(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_CameraOrientation_Wrapper wrap_Func_void_CameraOrientation(Func_void_CameraOrientation value) noexcept {
+    return Func_void_CameraOrientation_Wrapper(std::move(value));
   }
   
   // pragma MARK: std::function<bool(const std::shared_ptr<HybridDepthSpec>& /* depth */)>
@@ -2534,6 +2566,28 @@ namespace margelo::nitro::camera::bridge::swift {
   }
   inline Result_std__shared_ptr_Promise_std__shared_ptr_HybridRecorderSpec____ create_Result_std__shared_ptr_Promise_std__shared_ptr_HybridRecorderSpec____(const std::exception_ptr& error) noexcept {
     return Result<std::shared_ptr<Promise<std::shared_ptr<HybridRecorderSpec>>>>::withError(error);
+  }
+  
+  // pragma MARK: std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>
+  /**
+   * Specialized version of `std::function<void(const std::string&, RecordingFinishedReason)>`.
+   */
+  using Func_void_std__string_RecordingFinishedReason = std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>;
+  /**
+   * Wrapper class for a `std::function<void(const std::string& / * filePath * /, RecordingFinishedReason / * reason * /)>`, this can be used from Swift.
+   */
+  class Func_void_std__string_RecordingFinishedReason_Wrapper final {
+  public:
+    explicit Func_void_std__string_RecordingFinishedReason_Wrapper(std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>&& func): _function(std::make_unique<std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>>(std::move(func))) {}
+    inline void call(std::string filePath, int reason) const noexcept {
+      _function->operator()(filePath, static_cast<RecordingFinishedReason>(reason));
+    }
+  private:
+    std::unique_ptr<std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>> _function;
+  } SWIFT_NONCOPYABLE;
+  Func_void_std__string_RecordingFinishedReason create_Func_void_std__string_RecordingFinishedReason(void* NON_NULL swiftClosureWrapper) noexcept;
+  inline Func_void_std__string_RecordingFinishedReason_Wrapper wrap_Func_void_std__string_RecordingFinishedReason(Func_void_std__string_RecordingFinishedReason value) noexcept {
+    return Func_void_std__string_RecordingFinishedReason_Wrapper(std::move(value));
   }
   
   // pragma MARK: std::vector<std::shared_ptr<HybridCameraControllerSpec>>

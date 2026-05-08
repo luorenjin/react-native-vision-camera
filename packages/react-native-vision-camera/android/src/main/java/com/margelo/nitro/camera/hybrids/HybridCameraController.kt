@@ -15,6 +15,7 @@ import com.margelo.nitro.camera.FocusOptions
 import com.margelo.nitro.camera.HybridCameraControllerSpec
 import com.margelo.nitro.camera.HybridCameraDeviceSpec
 import com.margelo.nitro.camera.HybridMeteringPointSpec
+import com.margelo.nitro.camera.ListenerSubscription
 import com.margelo.nitro.camera.MeteringMode
 import com.margelo.nitro.camera.TorchMode
 import com.margelo.nitro.camera.Variant_NullType_Double
@@ -176,6 +177,14 @@ class HybridCameraController(
       camera.cameraControl
         .cancelFocusAndMetering()
         .await()
+    }
+  }
+
+  override fun addSubjectAreaChangedListener(onSubjectAreaChanged: (() -> Unit)): ListenerSubscription {
+    // TODO: CameraX does not yet support subject area changed listeners.
+    //       Feature Request: https://issuetracker.google.com/issues/505643406
+    return ListenerSubscription {
+      // noop
     }
   }
 

@@ -16,16 +16,15 @@ import { useDerivedValue, useSharedValue } from 'react-native-reanimated'
 import {
   type CameraController,
   type CameraFrameOutput,
+  type CameraOrientation,
   type CameraProps,
   type CameraSession,
   type CameraSessionConfig,
   type CameraVideoOutput,
-  createNormalizedMeteringPoint,
   type FocusOptions,
   type Frame,
   type MeteringMode,
   type MirrorMode,
-  type Orientation,
   type PixelFormat,
   type Point,
   type ResolutionBiasConstraint,
@@ -34,6 +33,7 @@ import {
   useFrameOutput,
   useOrientation,
   type VideoPixelFormat,
+  VisionCamera,
 } from 'react-native-vision-camera'
 import { createSynchronizable, scheduleOnRN } from 'react-native-worklets'
 import { renderToTexture, type SkiaOnFrameState } from '../render'
@@ -169,7 +169,7 @@ export interface SkiaCameraProps
    */
   pixelFormat?: TargetVideoPixelFormat
   /**
-   * Physically rotates buffers to the desired target {@linkcode Orientation}
+   * Physically rotates buffers to the desired target {@linkcode CameraOrientation}
    * and {@linkcode MirrorMode}.
    *
    * By default, it is disabled as Skia rotates and mirrors the
@@ -218,7 +218,7 @@ function SkiaCameraImpl({
   const texture = useSharedValue<SkImage | null>(null)
 
   const lastFrameOrientation = useMemo(
-    () => createSynchronizable<Orientation | undefined>(undefined),
+    () => createSynchronizable<CameraOrientation | undefined>(undefined),
     [],
   )
   const lastFrameIsMirrored = useMemo(
@@ -355,7 +355,7 @@ function SkiaCameraImpl({
         throw new Error(`Cannot focus - Camera is null!`)
       }
       const transformedPoint = this.convertViewPointToNormalizedPoint(viewPoint)
-      const meteringPoint = createNormalizedMeteringPoint(
+      const meteringPoint = VisionCamera.createNormalizedMeteringPoint(
         transformedPoint.x,
         transformedPoint.y,
       )

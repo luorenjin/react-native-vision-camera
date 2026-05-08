@@ -1,19 +1,19 @@
 package com.margelo.nitro.camera.hybrids.outputs
 
-import android.annotation.SuppressLint
 import android.media.MediaActionSound
 import android.util.Log
 import androidx.camera.core.CameraInfo
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.takePicture
+import com.margelo.nitro.camera.CameraOrientation
 import com.margelo.nitro.camera.CapturePhotoCallbacks
 import com.margelo.nitro.camera.CapturePhotoSettings
 import com.margelo.nitro.camera.HybridCameraPhotoOutputSpec
 import com.margelo.nitro.camera.HybridPhotoSpec
 import com.margelo.nitro.camera.MediaType
 import com.margelo.nitro.camera.MirrorMode
-import com.margelo.nitro.camera.Orientation
 import com.margelo.nitro.camera.PhotoFile
 import com.margelo.nitro.camera.PhotoOutputOptions
 import com.margelo.nitro.camera.QualityPrioritization
@@ -42,7 +42,7 @@ class HybridPhotoOutput(
 ) : HybridCameraPhotoOutputSpec(),
   NativeCameraOutput {
   override val mediaType: MediaType = MediaType.VIDEO
-  override var outputOrientation: Orientation = Orientation.UP
+  override var outputOrientation: CameraOrientation = CameraOrientation.UP
     set(value) {
       field = value
       imageCapture?.targetRotation = value.surfaceRotation
@@ -94,7 +94,7 @@ class HybridPhotoOutput(
           // Resolution
           setResolutionSelector(resolutionSelector)
 
-          // Orientation
+          // CameraOrientation
           setTargetRotation(outputOrientation.surfaceRotation)
 
           // Format (JPEG, RAW, ...)
@@ -134,11 +134,14 @@ class HybridPhotoOutput(
   override val supportsCameraCalibrationDataDelivery: Boolean
     get() = false
 
-  @SuppressLint("RestrictedApi")
   private fun shouldMirror(): Boolean {
-    val imageCapture = imageCapture ?: return false
-    val camera = imageCapture.camera ?: return false
-    return imageCapture.isMirroringRequired(camera)
+    val camera = imageCapture?.camera ?: return false
+    return when (mirrorMode) {
+      MirrorMode.ON -> true
+      MirrorMode.OFF -> false
+      // AUTO follows CameraX's default "mirror front only" semantics.
+      MirrorMode.AUTO -> camera.cameraInfo.lensFacing == CameraSelector.LENS_FACING_FRONT
+    }
   }
 
   override fun capturePhoto(
@@ -165,18 +168,24 @@ class HybridPhotoOutput(
         }
 
       // 2. Perform Capture
+      var didFireOnDidCapturePhoto = false
       val image =
         imageCapture.takePicture(
           {
+            callbacks.onWillBeginCapture?.invoke()
             if (enableShutterSound) {
               shutterSound.play(MediaActionSound.SHUTTER_CLICK)
             }
-            callbacks.onWillBeginCapture?.invoke()
+            // CameraX exposes a single pre-capture hook, so we fire both the
+            // "will begin" and "will capture" callbacks here. On iOS these
+            // are distinct moments (AVCapturePhotoCaptureDelegate).
+            callbacks.onWillCapturePhoto?.invoke()
           },
           { progress ->
             if (progress == 100) {
               // Capture is complete! Now we're encoding...
               callbacks.onDidCapturePhoto?.invoke()
+              didFireOnDidCapturePhoto = true
             }
           },
           { bitmap ->
@@ -187,6 +196,11 @@ class HybridPhotoOutput(
             }
           },
         )
+
+      if (!didFireOnDidCapturePhoto) {
+        // Not every device supports progress callbacks, so we just fire it later here
+        callbacks.onDidCapturePhoto?.invoke()
+      }
 
       // 3. Return
       return@async HybridPhoto(
@@ -237,18 +251,21 @@ class HybridPhotoOutput(
           }.build()
 
       // 2. Perform Capture
+      var didFireOnDidCapturePhoto = false
       imageCapture.takePicture(
         outputFileOptions,
         {
+          callbacks.onWillBeginCapture?.invoke()
           if (enableShutterSound) {
             shutterSound.play(MediaActionSound.SHUTTER_CLICK)
           }
-          callbacks.onWillBeginCapture?.invoke()
+          callbacks.onWillCapturePhoto?.invoke()
         },
         { progress ->
           if (progress == 100) {
             // Capture is complete! Saving...
             callbacks.onDidCapturePhoto?.invoke()
+            didFireOnDidCapturePhoto = true
           }
         },
         { bitmap ->
@@ -259,6 +276,11 @@ class HybridPhotoOutput(
           }
         },
       )
+
+      if (!didFireOnDidCapturePhoto) {
+        // Not every device supports progress callbacks, so we just fire it later here
+        callbacks.onDidCapturePhoto?.invoke()
+      }
 
       // 3. Return
       return@async PhotoFile(file.absolutePath)

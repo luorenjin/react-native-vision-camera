@@ -10,7 +10,7 @@ import Foundation
 import NitroModules
 
 class HybridFrameRecorder: HybridRecorderSpec {
-  private let orientation: Orientation
+  private let orientation: CameraOrientation
   private let masterClock: CMClock
   private let fileURL: URL
   private let assetWriter: AVAssetWriter
@@ -19,8 +19,14 @@ class HybridFrameRecorder: HybridRecorderSpec {
   private let queue: DispatchQueue
   private var isFinishing = false
   private let delegate: RecorderDelegate
+  private let settings: RecorderSettings
 
-  private var onRecordingFinished: ((String) -> Void)? = nil
+  /// Sum of all appended sample sizes. Accumulated rather than stat'd because
+  /// `AVAssetWriter` buffers writes, so on-disk size lags significantly behind
+  /// the actual recorded data until `finishWriting` flushes.
+  private var accumulatedBytes: Int64 = 0
+
+  private var onRecordingFinished: ((String, RecordingFinishedReason) -> Void)? = nil
   private var onRecordingError: ((any Error) -> Void)? = nil
   private var onRecordingPaused: (() -> Void)? = nil
   private var onRecordingResumed: (() -> Void)? = nil
@@ -32,21 +38,23 @@ class HybridFrameRecorder: HybridRecorderSpec {
   }
 
   init(
-    orientation: Orientation,
+    orientation: CameraOrientation,
     masterClock: CMClock,
-    fileType: AVFileType,
+    fileType: RecorderFileType,
+    settings: RecorderSettings,
     delegate: RecorderDelegate
   ) throws {
     self.orientation = orientation
     self.masterClock = masterClock
-    self.fileURL = try URL.createTempURL(fileType: fileType)
-    self.assetWriter = try AVAssetWriter(outputURL: fileURL, fileType: fileType)
+    self.fileURL = try URL.createTempURL(fileType: fileType.toUTType())
+    self.assetWriter = try AVAssetWriter(outputURL: fileURL, fileType: fileType.toAVFileType())
     self.assetWriter.shouldOptimizeForNetworkUse = false
     self.queue = DispatchQueue(
       label: "com.margelo.camera.recorder",
       qos: .utility
     )
     self.delegate = delegate
+    self.settings = settings
 
     super.init()
   }
@@ -144,7 +152,7 @@ class HybridFrameRecorder: HybridRecorderSpec {
   }
 
   func startRecording(
-    onRecordingFinished: @escaping (String) -> Void,
+    onRecordingFinished: @escaping (String, RecordingFinishedReason) -> Void,
     onRecordingError: @escaping (any Error) -> Void,
     onRecordingPaused: (() -> Void)?,
     onRecordingResumed: (() -> Void)?
@@ -198,7 +206,7 @@ class HybridFrameRecorder: HybridRecorderSpec {
           logger.error(
             "Waited \(timeout) seconds, but the session is still not finished - force-stopping session..."
           )
-          self.finish()
+          self.finish(reason: .stopped)
         }
       }
     }
@@ -264,6 +272,7 @@ class HybridFrameRecorder: HybridRecorderSpec {
       do {
         let track = try self.getTrack(ofType: type)
         try track.append(buffer: buffer)
+        self.accumulatedBytes += Int64(CMSampleBufferGetTotalSampleSize(buffer))
       } catch {
         logger.error("Failed to append buffer to \(type.rawValue) track! \(error)")
         self.onRecordingError?(error)
@@ -272,17 +281,53 @@ class HybridFrameRecorder: HybridRecorderSpec {
       // If we failed to write the frames, stop the Recording
       if self.assetWriter.status == .failed {
         logger.error("Failed to write buffer: \(self.assetWriter.error)")
-        self.onRecordingError?(
-          self.assetWriter.error ?? RuntimeError.error(withMessage: "Failed to write Buffer!"))
-        self.finish()
+        let error = self.assetWriter.error ?? RuntimeError("Failed to write Buffer!")
+        self.onRecordingError?(error)
+        // finish() will hit the error guard below - reason is unused in that branch
+        self.finish(reason: .stopped)
         return
       }
 
-      // When all tracks (video + audio) are finished, finish the Recording.
+      // Check if we reached any limits (file size or duration), if yes; stop
+      if self.reachedDurationLimit() {
+        self.finish(reason: .maxDurationReached)
+        return
+      }
+      if self.reachedFileSizeLimit() {
+        self.finish(reason: .maxFileSizeReached)
+        return
+      }
+
+      // When all tracks (video + audio) are finished (via `stopRecording`),
+      // finish the Recording.
       if self.isFinished {
-        self.finish()
+        self.finish(reason: .stopped)
       }
     }
+  }
+
+  private func reachedFileSizeLimit() -> Bool {
+    if let maxFileSize = settings.maxFileSize {
+      // Check if video size >= max target file size
+      if accumulatedBytes >= Int64(maxFileSize) {
+        logger.info("Reached maxFileSize of \(maxFileSize) bytes - finishing recording.")
+        return true
+      }
+    }
+    return false
+  }
+  private func reachedDurationLimit() -> Bool {
+    if let maxDuration = settings.maxDuration,
+      let duration = videoTrack?.duration
+    {
+      // Check if video track duration >= max target duration
+      let maxDuration = CMTime(seconds: maxDuration, preferredTimescale: 600)
+      if CMTimeCompare(duration, maxDuration) >= 0 {
+        logger.info("Reached maxDuration of \(maxDuration.seconds)s - finishing recording.")
+        return true
+      }
+    }
+    return false
   }
 
   @inline(__always)
@@ -303,15 +348,14 @@ class HybridFrameRecorder: HybridRecorderSpec {
     }
   }
 
-  private func finish() {
+  private func finish(reason: RecordingFinishedReason) {
     logger.info("Stopping AssetWriter with status \(self.assetWriter.status.rawValue)...")
 
     guard let videoTrack,
       let lastVideoTimestamp = videoTrack.lastTimestamp
     else {
       // We don't even have a video track
-      let error = RuntimeError.error(
-        withMessage: "Failed to finish() - No video track was ever initialized/started!")
+      let error = RuntimeError("Failed to finish() - No video track was ever initialized/started!")
       logger.error("\(error.description)")
       self.onRecordingError?(error)
       assetWriter.cancelWriting()
@@ -320,8 +364,7 @@ class HybridFrameRecorder: HybridRecorderSpec {
     }
     guard assetWriter.status == .writing else {
       // The asset writer has an error - cancel everything.
-      let error = RuntimeError.error(
-        withMessage: "Failed to finish() - AssetWriter status was \(assetWriter.status.rawValue)!")
+      let error = RuntimeError("Failed to finish() - AssetWriter status was \(assetWriter.status.rawValue)!")
       logger.error("\(error.description)")
       self.onRecordingError?(error)
       assetWriter.cancelWriting()
@@ -345,7 +388,7 @@ class HybridFrameRecorder: HybridRecorderSpec {
     )
     assetWriter.finishWriting {
       logger.info("Asset Writer finished writing successfully!")
-      self.onRecordingFinished?(self.filePath)
+      self.onRecordingFinished?(self.filePath, reason)
       self.delegate.onRecorderDidStop()
     }
   }

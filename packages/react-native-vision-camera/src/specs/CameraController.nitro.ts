@@ -7,6 +7,7 @@ import type {
   MeteringMode,
   SceneAdaptiveness,
 } from './common-types/FocusOptions'
+import type { ListenerSubscription } from './common-types/ListenerSubscription'
 import type { TorchMode } from './common-types/TorchMode'
 import type { WhiteBalanceGains } from './common-types/WhiteBalanceGains'
 import type { WhiteBalanceMode } from './common-types/WhiteBalanceMode'
@@ -90,7 +91,7 @@ export interface CameraControllerConfiguration {
  * const device = useCameraDevice('back')
  * const camera = useCamera({
  *   isActive: true,
- *   input: device,
+ *   device: device,
  *   outputs: []
  * })
  * useEffect(() => {
@@ -263,15 +264,58 @@ export interface CameraController
   focusTo(point: MeteringPoint, options: FocusOptions): Promise<void>
   /**
    * Cancels any current focus operations from {@linkcode focusTo | focusTo(...)},
-   * resets back all 3A focus modes to continuously auto-focus, and
+   * resets back all 3A focus modes to continuously auto-focus if they
+   * have been previously locked (e.g. via {@linkcode setFocusLocked | setFocusLocked(...)} or
+   * {@linkcode lockCurrentFocus | lockCurrentFocus()}, and similar), and
    * resets the focus point of interest to be in the center.
    *
    * @example
-   * ```
+   * ```ts
    * await controller.resetFocus()
    * ```
    */
   resetFocus(): Promise<void>
+  /**
+   * Adds a listener to be fired everytime the subject area
+   * substantially changes - e.g. when the user pans away
+   * from a scene previously in focus.
+   *
+   * Returns a {@linkcode ListenerSubscription} - call
+   * {@linkcode ListenerSubscription.remove | remove()} on it
+   * to stop receiving subject-area-change events. Multiple
+   * subscriptions can coexist; the device stops monitoring
+   * subject-area changes only once the last subscription is
+   * removed.
+   *
+   * @discussion
+   * When manually locking focus (e.g. via
+   * {@linkcode focusTo | focusTo(...)} with {@linkcode FocusOptions.adaptiveness adaptiveness} set to {@linkcode SceneAdaptiveness | 'locked'},
+   * {@linkcode setFocusLocked | setFocusLocked(...)} (or similar), or
+   * {@linkcode lockCurrentFocus | lockCurrentFocus()} (or similar)),
+   * it is useful to listen for subject area changes, to reset focus
+   * again via {@linkcode resetFocus | resetFocus()}.
+   *
+   * @platform iOS
+   * @example
+   * ```ts
+   * const controller = ...
+   * // Lock AE/AF/AWB
+   * await Promise.all([
+   *   controller.lockCurrentExposure(),
+   *   controller.lockCurrentFocus(),
+   *   controller.lockCurrentWhiteBalance(),
+   * ])
+   * const subscription = controller.addSubjectAreaChangedListener(() => {
+   *   // When user moves Camera away, reset AE/AF/AWB again
+   *   controller.resetFocus()
+   * })
+   * // Later, to stop listening:
+   * subscription.remove()
+   * ```
+   */
+  addSubjectAreaChangedListener(
+    onSubjectAreaChanged: () => void,
+  ): ListenerSubscription
 
   // pragma MARK: Zoom
   /**
@@ -368,7 +412,10 @@ export interface CameraController
 
   // pragma MARK: Exposure
   /**
-   * Get the current exposure compensation bias.
+   * Get the current exposure compensation bias, or `0`
+   * if the {@linkcode device} does not support exposure
+   * bias compensation - see
+   * {@linkcode CameraDevice.supportsExposureBias}.
    *
    * A positive value (like `1`) means over-exposed ("brighter"),
    * whereas a negative value (like `-1`) means under-exposed ("darker").
@@ -410,7 +457,9 @@ export interface CameraController
   readonly focusMode: FocusMode
   /**
    * Represents the current focus length, from `0.0` (closest)
-   * to `1.0` (furthest).
+   * to `1.0` (furthest), or `0` if the {@linkcode device} does
+   * not support manual focus control - see
+   * {@linkcode CameraDevice.supportsFocusLocking}.
    *
    * The {@linkcode lensPosition} changes over time (via continuous
    * auto-focus/3A), when focused to a specific point (via
@@ -461,26 +510,33 @@ export interface CameraController
   readonly exposureMode: ExposureMode
   /**
    * Represents the minimum value for the {@linkcode setExposureLocked | duration}
-   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}.
+   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}, or `0`
+   * if {@linkcode CameraDevice.supportsExposureLocking} is `false`.
    */
   readonly minExposureDuration: number
   /**
    * Represents the maximum value for the {@linkcode setExposureLocked | duration}
-   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}.
+   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}, or `0`
+   * if {@linkcode CameraDevice.supportsExposureLocking} is `false`.
    */
   readonly maxExposureDuration: number
   /**
    * Represents the minimum value for the {@linkcode setExposureLocked | iso}
-   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}.
+   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}, or `0`
+   * if {@linkcode CameraDevice.supportsExposureLocking} is `false`.
    */
   readonly minISO: number
   /**
    * Represents the maximum value for the {@linkcode setExposureLocked | iso}
-   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}.
+   * parameter in {@linkcode setExposureLocked | setExposureLocked(...)}, or `0`
+   * if {@linkcode CameraDevice.supportsExposureLocking} is `false`.
    */
   readonly maxISO: number
   /**
-   * Represents the current exposure duration, in seconds.
+   * Represents the current exposure duration, in seconds,
+   * or `0` if the {@linkcode device} does not support
+   * manual exposure control - see
+   * {@linkcode CameraDevice.supportsExposureLocking}..
    *
    * The {@linkcode exposureDuration} value changes over time (via
    * continuous auto-focus/3A), when focused to a specific point (via
@@ -489,7 +545,10 @@ export interface CameraController
    */
   readonly exposureDuration: number
   /**
-   * Represents the current ISO value.
+   * Represents the current ISO value, or `0`
+   * if the {@linkcode device} does not support
+   * manual exposure control - see
+   * {@linkcode CameraDevice.supportsExposureLocking}..
    *
    * The {@linkcode iso} value changes over time (via continuous
    * auto-focus/3A), when focused to a specific point (via
@@ -541,7 +600,10 @@ export interface CameraController
    */
   readonly whiteBalanceMode: WhiteBalanceMode
   /**
-   * Represents the current white balance gains.
+   * Represents the current white balance gains, or
+   * `{ 0, 0, 0 }` if the {@linkcode device} does not
+   * support manual white-balance control - see
+   * {@linkcode CameraDevice.supportsWhiteBalanceLocking}..
    *
    * The {@linkcode whiteBalanceGains} change over time (via continuous
    * auto-focus/3A), when focused to a specific point (via

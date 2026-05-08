@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://visioncamera.margelo.com/docs
+    about: Check the docs before opening an issue — most questions are answered there.
+  - name: Troubleshooting Guide
+    url: https://visioncamera.margelo.com/docs
+    about: Common build and runtime issues with known fixes.
+  - name: Discord
+    url: https://margelo.com/discord
+    about: Chat with the community for general questions and help.

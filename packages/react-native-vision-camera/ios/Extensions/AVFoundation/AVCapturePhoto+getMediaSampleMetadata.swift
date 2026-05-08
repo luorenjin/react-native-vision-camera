@@ -17,7 +17,7 @@ extension AVCapturePhoto {
         withMessage: "Photo did not contain a `kCGImagePropertyOrientation` metadata key!")
     }
     let uiOrientation = try UIImage.Orientation(fromExif: exifOrientation)
-    let orientation = Orientation(uiOrientation: uiOrientation)
+    let orientation = CameraOrientation(uiOrientation: uiOrientation)
     let isMirrored = uiOrientation.isMirrored
     let timestamp = self.timestamp
     return MediaSampleMetadata(

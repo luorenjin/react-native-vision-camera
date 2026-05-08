@@ -18,6 +18,8 @@ namespace margelo::nitro::camera { struct BoundingBox; }
 namespace margelo::nitro::camera { struct CameraControllerConfiguration; }
 // Forward declaration of `CameraExtensionType` to properly resolve imports.
 namespace margelo::nitro::camera { enum class CameraExtensionType; }
+// Forward declaration of `CameraOrientation` to properly resolve imports.
+namespace margelo::nitro::camera { enum class CameraOrientation; }
 // Forward declaration of `CameraOutputConfiguration` to properly resolve imports.
 namespace margelo::nitro::camera { struct CameraOutputConfiguration; }
 // Forward declaration of `CameraPosition` to properly resolve imports.
@@ -154,8 +156,6 @@ namespace margelo::nitro::camera { struct NativeBuffer; }
 namespace margelo::nitro::camera { struct ObjectOutputOptions; }
 // Forward declaration of `OrientationSource` to properly resolve imports.
 namespace margelo::nitro::camera { enum class OrientationSource; }
-// Forward declaration of `Orientation` to properly resolve imports.
-namespace margelo::nitro::camera { enum class Orientation; }
 // Forward declaration of `OutputStreamType` to properly resolve imports.
 namespace margelo::nitro::camera { enum class OutputStreamType; }
 // Forward declaration of `PermissionStatus` to properly resolve imports.
@@ -184,8 +184,12 @@ namespace margelo::nitro::camera { struct PreviewStabilizationModeConstraint; }
 namespace margelo::nitro::camera { enum class QualityPrioritization; }
 // Forward declaration of `Range` to properly resolve imports.
 namespace margelo::nitro::camera { struct Range; }
+// Forward declaration of `RecorderFileType` to properly resolve imports.
+namespace margelo::nitro::camera { enum class RecorderFileType; }
 // Forward declaration of `RecorderSettings` to properly resolve imports.
 namespace margelo::nitro::camera { struct RecorderSettings; }
+// Forward declaration of `RecordingFinishedReason` to properly resolve imports.
+namespace margelo::nitro::camera { enum class RecordingFinishedReason; }
 // Forward declaration of `ResolutionBiasConstraint` to properly resolve imports.
 namespace margelo::nitro::camera { struct ResolutionBiasConstraint; }
 // Forward declaration of `ScannedObjectType` to properly resolve imports.
@@ -233,6 +237,7 @@ namespace margelo::nitro::camera { struct WhiteBalanceTemperatureAndTint; }
 #include "BoundingBox.hpp"
 #include "CameraControllerConfiguration.hpp"
 #include "CameraExtensionType.hpp"
+#include "CameraOrientation.hpp"
 #include "CameraOutputConfiguration.hpp"
 #include "CameraPosition.hpp"
 #include "CameraSessionConfiguration.hpp"
@@ -299,7 +304,6 @@ namespace margelo::nitro::camera { struct WhiteBalanceTemperatureAndTint; }
 #include "MirrorMode.hpp"
 #include "NativeBuffer.hpp"
 #include "ObjectOutputOptions.hpp"
-#include "Orientation.hpp"
 #include "OrientationSource.hpp"
 #include "OutputStreamType.hpp"
 #include "PermissionStatus.hpp"
@@ -315,7 +319,9 @@ namespace margelo::nitro::camera { struct WhiteBalanceTemperatureAndTint; }
 #include "PreviewStabilizationModeConstraint.hpp"
 #include "QualityPrioritization.hpp"
 #include "Range.hpp"
+#include "RecorderFileType.hpp"
 #include "RecorderSettings.hpp"
+#include "RecordingFinishedReason.hpp"
 #include "ResolutionBiasConstraint.hpp"
 #include "ScannedObjectType.hpp"
 #include "SceneAdaptiveness.hpp"

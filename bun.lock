@@ -20,7 +20,7 @@
     },
     "apps/simple-camera": {
       "name": "simple-camera",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "dependencies": {
         "@react-native-community/blur": "^4.4.1",
         "@react-native-harness/platform-apple": "^1.1.0-rc.4",
@@ -33,8 +33,8 @@
         "react": "19.2.3",
         "react-native": "0.84.0",
         "react-native-gesture-handler": "^2.30.0",
-        "react-native-nitro-image": "0.13.1",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-image": "0.14.0",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-reanimated": "4.3.0",
         "react-native-safe-area-context": "^5.7.0",
         "react-native-screens": "^4.24.0",
@@ -70,6 +70,7 @@
       "dependencies": {
         "@heroicons/react": "^2.2.0",
         "@r4ai/remark-callout": "^0.6.2",
+        "@vercel/analytics": "^2.0.1",
         "fumadocs-core": "16.6.17",
         "fumadocs-docgen": "^3.0.4",
         "fumadocs-mdx": "14.2.10",
@@ -100,14 +101,14 @@
     },
     "packages/react-native-vision-camera": {
       "name": "react-native-vision-camera",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@types/react": "19.2.14",
-        "nitrogen": "0.35.4",
+        "nitrogen": "0.35.6",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-image": "0.13.1",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-image": "0.14.0",
+        "react-native-nitro-modules": "0.35.6",
         "typescript": "5.9.3",
       },
       "peerDependencies": {
@@ -119,13 +120,13 @@
     },
     "packages/react-native-vision-camera-barcode-scanner": {
       "name": "react-native-vision-camera-barcode-scanner",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@types/react": "19.2.14",
-        "nitrogen": "0.35.4",
+        "nitrogen": "0.35.6",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-vision-camera": "*",
         "typescript": "5.9.3",
       },
@@ -138,13 +139,13 @@
     },
     "packages/react-native-vision-camera-location": {
       "name": "react-native-vision-camera-location",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@types/react": "19.2.14",
-        "nitrogen": "0.35.4",
+        "nitrogen": "0.35.6",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-vision-camera": "*",
         "typescript": "5.9.3",
       },
@@ -157,13 +158,13 @@
     },
     "packages/react-native-vision-camera-resizer": {
       "name": "react-native-vision-camera-resizer",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@types/react": "19.2.14",
-        "nitrogen": "0.35.4",
+        "nitrogen": "0.35.6",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-vision-camera": "*",
         "typescript": "5.9.3",
       },
@@ -176,13 +177,13 @@
     },
     "packages/react-native-vision-camera-skia": {
       "name": "react-native-vision-camera-skia",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@shopify/react-native-skia": "2.4.21",
         "@types/react": "19.2.14",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-reanimated": "4.3.0",
         "react-native-vision-camera": "*",
         "react-native-vision-camera-worklets": "*",
@@ -201,13 +202,13 @@
     },
     "packages/react-native-vision-camera-worklets": {
       "name": "react-native-vision-camera-worklets",
-      "version": "5.0.1",
+      "version": "5.0.9",
       "devDependencies": {
         "@types/react": "19.2.14",
-        "nitrogen": "0.35.4",
+        "nitrogen": "0.35.6",
         "react": "19.2.3",
         "react-native": "0.84.0",
-        "react-native-nitro-modules": "0.35.4",
+        "react-native-nitro-modules": "0.35.6",
         "react-native-vision-camera": "*",
         "react-native-worklets": "0.8.1",
         "typescript": "5.9.3",
@@ -1173,6 +1174,8 @@
     "@unrs/resolver-binding-win32-ia32-msvc": ["@unrs/resolver-binding-win32-ia32-msvc@1.11.1", "", { "os": "win32", "cpu": "ia32" }, "sha512-DCEI6t5i1NmAZp6pFonpD5m7i6aFrpofcp4LA2i8IIq60Jyo28hamKBxNrZcyOwVOZkgsRp9O2sXWBWP8MnvIQ=="],
 
     "@unrs/resolver-binding-win32-x64-msvc": ["@unrs/resolver-binding-win32-x64-msvc@1.11.1", "", { "os": "win32", "cpu": "x64" }, "sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g=="],
+
+    "@vercel/analytics": ["@vercel/analytics@2.0.1", "", { "peerDependencies": { "@remix-run/react": "^2", "@sveltejs/kit": "^1 || ^2", "next": ">= 13", "nuxt": ">= 3", "react": "^18 || ^19 || ^19.0.0-rc", "svelte": ">= 4", "vue": "^3", "vue-router": "^4" }, "optionalPeers": ["@remix-run/react", "@sveltejs/kit", "next", "nuxt", "react", "svelte", "vue", "vue-router"] }, "sha512-MTQG6V9qQrt1tsDeF+2Uoo5aPjqbVPys1xvnIftXSJYG2SrwXRHnqEvVoYID7BTruDz4lCd2Z7rM1BdkUehk2g=="],
 
     "@vitest/expect": ["@vitest/expect@4.0.16", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "@types/chai": "^5.2.2", "@vitest/spy": "4.0.16", "@vitest/utils": "4.0.16", "chai": "^6.2.1", "tinyrainbow": "^3.0.3" } }, "sha512-eshqULT2It7McaJkQGLkPjPjNph+uevROGuIMJdG3V+0BSR2w9u6J9Lwu+E8cK5TETlfou8GRijhafIMhXsimA=="],
 
@@ -2164,7 +2167,7 @@
 
     "next-themes": ["next-themes@0.4.6", "", { "peerDependencies": { "react": "^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc", "react-dom": "^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc" } }, "sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA=="],
 
-    "nitrogen": ["nitrogen@0.35.4", "", { "dependencies": { "chalk": "^5.3.0", "react-native-nitro-modules": "^0.35.4", "ts-morph": "^27.0.0", "yargs": "^18.0.0", "zod": "^4.0.5" }, "bin": { "nitrogen": "lib/index.js" } }, "sha512-mGw76rMS+c5wyxx0VHVpJU5jluYBYffRkGGtdRtS+0jNZmo2KwN66YjRDYYtPpxVPw6pAoGLTwNvYvTE0ly3ww=="],
+    "nitrogen": ["nitrogen@0.35.6", "", { "dependencies": { "chalk": "^5.3.0", "react-native-nitro-modules": "^0.35.6", "ts-morph": "^27.0.0", "yargs": "^18.0.0", "zod": "^4.0.5" }, "bin": { "nitrogen": "lib/index.js" } }, "sha512-fUoyqCEQugl49L/lp/v3LceZt8jwL/gqfLhWsxRPxr1pOTnBhyrcEJ2dAJvHl10h7JxaswP6YCnVZMZmjJavKg=="],
 
     "nocache": ["nocache@3.0.4", "", {}, "sha512-WDD0bdg9mbq6F4mRxEYcPWwfA1vxd0mrvKOyxI7Xj/atfRHVeutzuWByG//jfm4uPzp0y4Kj051EORCBSQMycw=="],
 
@@ -2350,9 +2353,9 @@
 
     "react-native-is-edge-to-edge": ["react-native-is-edge-to-edge@1.3.1", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-NIXU/iT5+ORyCc7p0z2nnlkouYKX425vuU1OEm6bMMtWWR9yvb+Xg5AZmImTKoF9abxCPqrKC3rOZsKzUYgYZA=="],
 
-    "react-native-nitro-image": ["react-native-nitro-image@0.13.1", "", { "peerDependencies": { "react": "*", "react-native": "*", "react-native-nitro-modules": "*" } }, "sha512-o2t1DNmNV57XfCtP6zX3LY7S3oJg1FrwlttuQM9nxoAPNl2bDBaKp+J3NtVFP+vriDPRTRChJP2xqGPbTGzzxw=="],
+    "react-native-nitro-image": ["react-native-nitro-image@0.14.0", "", { "peerDependencies": { "react": "*", "react-native": "*", "react-native-nitro-modules": "*" } }, "sha512-yLBm+SC/bdssO5XJhYOxVf6UeFfcUoRLwR1YXPJpNZyv65aHPijDg/nklJ/spAonWEl4yfPpATGSqo8mvVEjlQ=="],
 
-    "react-native-nitro-modules": ["react-native-nitro-modules@0.35.4", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-4qZa+1kgR/sPRNZv+UShxyArEPpovWxw76Dfd/DtCVtkQ92wOOxGIzdYvndprabd+t+r8zNYgYEPYE74gzkuVQ=="],
+    "react-native-nitro-modules": ["react-native-nitro-modules@0.35.6", "", { "peerDependencies": { "react": "*", "react-native": "*" } }, "sha512-3Cb7s+O5tpZ6RdIiPOB/wi3IMfBxD6tl6VDF8gJ5zvM/BEGTWxwMMLjzmWmsYPKekdbYBznF6qp2d2SxixPy8g=="],
 
     "react-native-reanimated": ["react-native-reanimated@4.3.0", "", { "dependencies": { "react-native-is-edge-to-edge": "^1.3.1", "semver": "^7.7.3" }, "peerDependencies": { "react": "*", "react-native": "0.81 - 0.85", "react-native-worklets": "0.8.x" } }, "sha512-HOTTPdKtddXTOsmQxDASXEwLS3lqEHrKERD3XOgzSqWJ7L3x81Pnx7mTcKx1FKdkgomMug/XSmm1C6Z7GIowxA=="],
 

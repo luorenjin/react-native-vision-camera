@@ -5,6 +5,17 @@ import { createWorkletRuntimeForThread } from './createWorkletRuntimeForThread'
 
 let listenerId = 62765
 
+/**
+ * Creates the default {@linkcode RuntimeThreadProvider} implementation that
+ * bridges `react-native-vision-camera` with
+ * [react-native-worklets](https://docs.swmansion.com/react-native-worklets/docs/).
+ *
+ * `react-native-vision-camera` lazily requires this provider through its module
+ * proxy, so installing `react-native-vision-camera-worklets` is usually all that
+ * is needed to enable Worklet-based Frame Processors.
+ *
+ * @see {@linkcode RuntimeThreadProvider}
+ */
 export function createRuntimeThreadProvider(): RuntimeThreadProvider {
   return {
     createAsyncRunner() {
@@ -14,9 +25,9 @@ export function createRuntimeThreadProvider(): RuntimeThreadProvider {
       const runtime = createWorkletRuntimeForThread(thread)
       return {
         setOnDepthFrameCallback(depthOutput, onDepth) {
-          if (onDepth != null) {
-            scheduleOnRuntime(runtime, () => {
-              'worklet'
+          scheduleOnRuntime(runtime, () => {
+            'worklet'
+            if (onDepth != null) {
               depthOutput.setOnDepthFrameCallback((depth) => {
                 try {
                   onDepth(depth)
@@ -29,15 +40,15 @@ export function createRuntimeThreadProvider(): RuntimeThreadProvider {
                 }
                 return true
               })
-            })
-          } else {
-            depthOutput.setOnDepthFrameCallback(undefined)
-          }
+            } else {
+              depthOutput.setOnDepthFrameCallback(undefined)
+            }
+          })
         },
         setOnFrameCallback(frameOutput, onFrame) {
-          if (onFrame != null) {
-            scheduleOnRuntime(runtime, () => {
-              'worklet'
+          scheduleOnRuntime(runtime, () => {
+            'worklet'
+            if (onFrame != null) {
               frameOutput.setOnFrameCallback((frame) => {
                 try {
                   onFrame(frame)
@@ -50,10 +61,10 @@ export function createRuntimeThreadProvider(): RuntimeThreadProvider {
                 }
                 return true
               })
-            })
-          } else {
-            frameOutput.setOnFrameCallback(undefined)
-          }
+            } else {
+              frameOutput.setOnFrameCallback(undefined)
+            }
+          })
         },
       }
     },

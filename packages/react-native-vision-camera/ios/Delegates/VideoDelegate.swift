@@ -15,14 +15,14 @@ final class VideoDelegate: NSObject, AVCaptureFileOutputRecordingDelegate {
   var onRecordingStarted: (() -> Void)?
   var onRecordingPaused: (() -> Void)?
   var onRecordingResumed: (() -> Void)?
-  var onRecordingFinished: (URL) -> Void
+  var onRecordingFinished: (URL, RecordingFinishedReason) -> Void
   var onRecordingError: (any Error) -> Void
 
   init(
     onRecordingStarted: (() -> Void)? = nil,
     onRecordingPaused: (() -> Void)? = nil,
     onRecordingResumed: (() -> Void)? = nil,
-    onRecordingFinished: @escaping (URL) -> Void,
+    onRecordingFinished: @escaping (URL, RecordingFinishedReason) -> Void,
     onRecordingError: @escaping (any Error) -> Void
   ) {
     self.onRecordingStarted = onRecordingStarted
@@ -67,10 +67,24 @@ final class VideoDelegate: NSObject, AVCaptureFileOutputRecordingDelegate {
     from connections: [AVCaptureConnection], error: (any Error)?
   ) {
     if let error {
-      onRecordingError(error)
+      // We have an error! Either we hit our max limits, or it's a true unexpected error.
+      let nsError = error as NSError
+      switch nsError.code {
+      case AVError.maximumDurationReached.rawValue:
+        // We hit max duration limit - treat this as a success, not error!
+        onRecordingFinished(outputFileURL, .maxDurationReached)
+      case AVError.maximumFileSizeReached.rawValue:
+        // We hit max file size limit - treat this as a success, not error!
+        onRecordingFinished(outputFileURL, .maxFileSizeReached)
+      default:
+        // We hit any other kind of error - this is an error event now.
+        onRecordingError(error)
+      }
     } else {
-      onRecordingFinished(outputFileURL)
+      // No error, everything went according to plan we just stopped + finished:
+      onRecordingFinished(outputFileURL, .stopped)
     }
+
     // Remove the static strong reference, we're done
     VideoDelegate.delegates.removeAll { $0 == self }
   }

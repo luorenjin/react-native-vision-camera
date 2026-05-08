@@ -97,7 +97,22 @@ export interface VideoOutputOptions {
    * @default undefined
    */
   targetBitRate?: number
+
+  /**
+   * The container file type for recordings produced by this output.
+   *
+   * On Android this is always `.mp4` and this field is ignored.
+   *
+   * @platform iOS
+   * @default 'mov'
+   */
+  fileType?: RecorderFileType
 }
+
+/**
+ * Container file type for a {@linkcode CameraVideoOutput}'s recordings.
+ */
+export type RecorderFileType = 'mp4' | 'mov'
 
 /**
  * Output settings for a {@linkcode CameraVideoOutput}.
@@ -128,6 +143,32 @@ export interface RecorderSettings {
    * into the video metadata using the ISO-6709 standard.
    */
   location?: Location
+  /**
+   * If set, the recording automatically stops once it reaches
+   * this duration, in seconds.
+   *
+   * When the limit is reached, the recording is finalized
+   * successfully, and the `onRecordingFinished` callback
+   * passed to {@linkcode Recorder.startRecording | startRecording(...)}
+   * is invoked with the resulting file path — the same
+   * behavior as calling {@linkcode Recorder.stopRecording | stopRecording()}.
+   *
+   * @default undefined
+   */
+  maxDuration?: number
+  /**
+   * If set, the recording automatically stops once the file
+   * reaches this size, in bytes.
+   *
+   * When the limit is reached, the recording is finalized
+   * successfully, and the `onRecordingFinished` callback
+   * passed to {@linkcode Recorder.startRecording | startRecording(...)}
+   * is invoked with the resulting file path — the same
+   * behavior as calling {@linkcode Recorder.stopRecording | stopRecording()}.
+   *
+   * @default undefined
+   */
+  maxFileSize?: number
 }
 
 /**

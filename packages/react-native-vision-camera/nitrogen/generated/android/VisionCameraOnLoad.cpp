@@ -16,10 +16,10 @@
 #include <NitroModules/HybridObjectRegistry.hpp>
 
 #include "JHybridCameraControllerSpec.hpp"
+#include "JFunc_void.hpp"
 #include "JHybridCameraFactorySpec.hpp"
 #include "JHybridFrameRendererSpec.hpp"
 #include "JHybridNativeThreadSpec.hpp"
-#include "JFunc_void.hpp"
 #include "JHybridNativeThreadFactorySpec.hpp"
 #include "JHybridGestureControllerSpec.hpp"
 #include "JHybridTapToFocusGestureControllerSpec.hpp"
@@ -39,7 +39,7 @@
 #include "JHybridLocationSpec.hpp"
 #include "JHybridMeteringPointSpec.hpp"
 #include "JHybridOrientationManagerSpec.hpp"
-#include "JFunc_void_Orientation.hpp"
+#include "JFunc_void_CameraOrientation.hpp"
 #include "JHybridCameraDepthFrameOutputSpec.hpp"
 #include "JFunc_bool_std__shared_ptr_HybridDepthSpec_.hpp"
 #include "JFunc_void_FrameDroppedReason.hpp"
@@ -56,7 +56,7 @@
 #include "JHybridCameraPreviewOutputSpec.hpp"
 #include "JHybridCameraVideoOutputSpec.hpp"
 #include "JHybridRecorderSpec.hpp"
-#include "JFunc_void_std__string.hpp"
+#include "JFunc_void_std__string_RecordingFinishedReason.hpp"
 #include "JFunc_void_std__exception_ptr.hpp"
 #include "JHybridCameraSessionSpec.hpp"
 #include "JFunc_void_std__shared_ptr_HybridCameraSessionConfigSpec_.hpp"
@@ -124,10 +124,10 @@ void registerAllNatives() {
 
   // Register native JNI methods
   margelo::nitro::camera::JHybridCameraControllerSpec::CxxPart::registerNatives();
+  margelo::nitro::camera::JFunc_void_cxx::registerNatives();
   margelo::nitro::camera::JHybridCameraFactorySpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridFrameRendererSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridNativeThreadSpec::CxxPart::registerNatives();
-  margelo::nitro::camera::JFunc_void_cxx::registerNatives();
   margelo::nitro::camera::JHybridNativeThreadFactorySpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridGestureControllerSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridTapToFocusGestureControllerSpec::CxxPart::registerNatives();
@@ -147,7 +147,7 @@ void registerAllNatives() {
   margelo::nitro::camera::JHybridLocationSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridMeteringPointSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridOrientationManagerSpec::CxxPart::registerNatives();
-  margelo::nitro::camera::JFunc_void_Orientation_cxx::registerNatives();
+  margelo::nitro::camera::JFunc_void_CameraOrientation_cxx::registerNatives();
   margelo::nitro::camera::JHybridCameraDepthFrameOutputSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JFunc_bool_std__shared_ptr_HybridDepthSpec__cxx::registerNatives();
   margelo::nitro::camera::JFunc_void_FrameDroppedReason_cxx::registerNatives();
@@ -164,7 +164,7 @@ void registerAllNatives() {
   margelo::nitro::camera::JHybridCameraPreviewOutputSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridCameraVideoOutputSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JHybridRecorderSpec::CxxPart::registerNatives();
-  margelo::nitro::camera::JFunc_void_std__string_cxx::registerNatives();
+  margelo::nitro::camera::JFunc_void_std__string_RecordingFinishedReason_cxx::registerNatives();
   margelo::nitro::camera::JFunc_void_std__exception_ptr_cxx::registerNatives();
   margelo::nitro::camera::JHybridCameraSessionSpec::CxxPart::registerNatives();
   margelo::nitro::camera::JFunc_void_std__shared_ptr_HybridCameraSessionConfigSpec__cxx::registerNatives();

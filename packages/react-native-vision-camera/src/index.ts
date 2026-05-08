@@ -1,7 +1,5 @@
 // Devices API
-
 export * from './CameraDevices'
-export * from './createNormalizedMeteringPoint'
 export * from './devices/getCameraDevice'
 // Hooks
 export * from './hooks/useAsyncRunner'
@@ -23,6 +21,7 @@ export * from './isScannedObject'
 export * from './specs/CameraController.nitro'
 export * from './specs/CameraFactory.nitro'
 export * from './specs/common-types/AutoFocusSystem'
+export * from './specs/common-types/CameraOrientation'
 export * from './specs/common-types/CameraPosition'
 export * from './specs/common-types/Constraint'
 export * from './specs/common-types/DepthPixelFormat'
@@ -36,7 +35,6 @@ export * from './specs/common-types/ListenerSubscription'
 export * from './specs/common-types/MediaType'
 export * from './specs/common-types/MirrorMode'
 export * from './specs/common-types/NativeBuffer'
-export * from './specs/common-types/Orientation'
 export * from './specs/common-types/OrientationSource'
 export * from './specs/common-types/OutputStreamType'
 export * from './specs/common-types/PermissionStatus'
@@ -91,12 +89,13 @@ export * from './specs/views/PreviewView.nitro'
 export * from './threading/AsyncRunner'
 export * from './threading/RuntimeThread'
 export * from './threading/RuntimeThreadProvider'
-// Resolutions
+// Utils
+export * from './utils/CommonDynamicRanges'
 export * from './utils/CommonResolutions'
-// Frame Converter
 export * from './utils/FrameConverter'
+// Main factory
 export * from './VisionCamera'
-// Camera View Component
+// Views
 export * from './views/Camera'
 // Native Hybrid Views
 export * from './views/NativeFrameRendererView'

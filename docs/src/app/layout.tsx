@@ -1,8 +1,10 @@
+import { Analytics } from '@vercel/analytics/next'
 import { RootProvider } from 'fumadocs-ui/provider/next'
 import type { Metadata, Viewport } from 'next'
 import './global.css'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { siteConfig } from '@/lib/site-config'
+import { getSiteStructuredData, serializeJsonLd } from '@/lib/structured-data'
 
 const geist = Geist({
   variable: '--font-sans',
@@ -58,8 +60,18 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       className={`${geist.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD is serialized with `<` escaping in `serializeJsonLd`.
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(getSiteStructuredData()),
+          }}
+        />
+      </head>
       <body className="flex flex-col min-h-dvh">
         <RootProvider>{children}</RootProvider>
+        <Analytics />
       </body>
     </html>
   )

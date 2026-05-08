@@ -19,15 +19,14 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
   let requiresDepthFormat: Bool = false
   let output: AVCaptureVideoDataOutput
   private var recorders = WeakArray<HybridFrameRecorder>()
-  // TODO: Allow configuring this
-  private let fileType = AVFileType.mov
+  private let fileType: RecorderFileType
 
   var streamType: StreamType = .video
   var targetResolution: ResolutionRule {
     return .closestTo(options.targetResolution)
   }
 
-  var outputOrientation: Orientation = .up {
+  var outputOrientation: CameraOrientation = .up {
     didSet {
       guard let connection = output.connection(with: .video) else { return }
       // TODO: Should we apply that within the CameraSession's DispatchQueue? Batch it?
@@ -40,6 +39,7 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
     self.output = AVCaptureVideoDataOutput()
     self.delegate = FrameDelegate()
     self.options = options
+    self.fileType = options.fileType ?? .mov
     self.queue = DispatchQueue(
       label: "com.margelo.camera.video-frame",
       qos: .userInteractive,
@@ -92,7 +92,7 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
           "Cannot call `getSupportedVideoCodecs()` when VideoOutput is not yet connected to the CameraSession!"
       )
     }
-    let availableCodecs = output.availableVideoCodecTypesForAssetWriter(writingTo: fileType)
+    let availableCodecs = output.availableVideoCodecTypesForAssetWriter(writingTo: fileType.toAVFileType())
     return availableCodecs.map { VideoCodec(avCodec: $0) }
   }
 
@@ -104,7 +104,7 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
       if let codec = settings.codec {
         let avCodec = try codec.toAVVideoCodecType()
         let availableCodecs = self.output.availableVideoCodecTypesForAssetWriter(
-          writingTo: self.fileType)
+          writingTo: self.fileType.toAVFileType())
         guard availableCodecs.contains(avCodec) else {
           throw RuntimeError.error(
             withMessage: "VideoOutput does not support the codec \"\(codec.stringValue)\"!")
@@ -124,11 +124,12 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
         orientation: .up,
         masterClock: clock,
         fileType: self.fileType,
+        settings: settings,
         delegate: self)
       // 2. Initialize its video track immediately
       guard
         let videoSettings = self.output.recommendedVideoSettingsForAssetWriter(
-          writingTo: self.fileType)
+          writingTo: self.fileType.toAVFileType())
       else {
         throw RuntimeError.error(
           withMessage: "Cannot initialize Recorder - no available video settings were found!")
@@ -141,7 +142,7 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
         recorder.setTimescale(self.output.recommendedMediaTimeScaleForAssetWriter)
         let codec = self.getCurrentVideoCodec()
         if let metadata = self.output.recommendedMovieMetadata(
-          forVideoCodecType: codec, assetWriterOutputFileType: self.fileType)
+          forVideoCodecType: codec, assetWriterOutputFileType: self.fileType.toAVFileType())
         {
           // 2.2. Set metadata if available
           try recorder.setMetadata(metadata, settings: settings)
@@ -155,7 +156,7 @@ class HybridCameraVideoFrameOutput: HybridCameraVideoOutputSpec, NativeCameraOut
       if self.options.enableAudio == true {
         let audioSession = try self.getOrCreateAudioSession()
         let audioSettings = audioSession.output.recommendedAudioSettingsForAssetWriter(
-          writingTo: self.fileType)
+          writingTo: self.fileType.toAVFileType())
         let audioFormat = audioSession.input.device.activeFormat
         try recorder.initializeAudioTrack(
           withSettings: audioSettings, format: audioFormat.formatDescription)

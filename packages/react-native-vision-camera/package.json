@@ -1,6 +1,6 @@
 {
   "name": "react-native-vision-camera",
-  "version": "5.0.1",
+  "version": "5.0.9",
   "description": "VisionCamera is the fastest and most powerful Camera for react-native.",
   "main": "lib/index",
   "module": "lib/index",
@@ -30,7 +30,6 @@
     "README.md"
   ],
   "scripts": {
-    "postinstall": "tsc || exit 0;",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf android/build node_modules/**/android/build lib",
     "build": "tsc",
@@ -71,11 +70,11 @@
   },
   "devDependencies": {
     "@types/react": "19.2.14",
-    "nitrogen": "0.35.4",
+    "nitrogen": "0.35.6",
     "react": "19.2.3",
     "react-native": "0.84.0",
-    "react-native-nitro-image": "0.13.1",
-    "react-native-nitro-modules": "0.35.4",
+    "react-native-nitro-image": "0.14.0",
+    "react-native-nitro-modules": "0.35.6",
     "typescript": "5.9.3"
   },
   "peerDependencies": {

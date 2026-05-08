@@ -9,8 +9,8 @@
 
 // Forward declaration of `PixelFormat` to properly resolve imports.
 namespace margelo::nitro::camera { enum class PixelFormat; }
-// Forward declaration of `Orientation` to properly resolve imports.
-namespace margelo::nitro::camera { enum class Orientation; }
+// Forward declaration of `CameraOrientation` to properly resolve imports.
+namespace margelo::nitro::camera { enum class CameraOrientation; }
 // Forward declaration of `HybridFramePlaneSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFramePlaneSpec; }
 // Forward declaration of `NativeBuffer` to properly resolve imports.
@@ -20,8 +20,8 @@ namespace margelo::nitro::camera { struct Point; }
 
 #include "PixelFormat.hpp"
 #include "JPixelFormat.hpp"
-#include "Orientation.hpp"
-#include "JOrientation.hpp"
+#include "CameraOrientation.hpp"
+#include "JCameraOrientation.hpp"
 #include <vector>
 #include <optional>
 #include <memory>
@@ -97,8 +97,8 @@ namespace margelo::nitro::camera {
     auto __result = method(_javaPart);
     return __result->toCpp();
   }
-  Orientation JHybridFrameSpec::getOrientation() {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JOrientation>()>("getOrientation");
+  CameraOrientation JHybridFrameSpec::getOrientation() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JCameraOrientation>()>("getOrientation");
     auto __result = method(_javaPart);
     return __result->toCpp();
   }
@@ -127,16 +127,16 @@ namespace margelo::nitro::camera {
   std::vector<std::shared_ptr<HybridFramePlaneSpec>> JHybridFrameSpec::getPlanes() {
     static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JArrayClass<JHybridFramePlaneSpec::JavaPart>>()>("getPlanes");
     auto __result = method(_javaPart);
-    return [&]() {
-      size_t __size = __result->size();
+    return [&](auto&& __input) {
+      size_t __size = __input->size();
       std::vector<std::shared_ptr<HybridFramePlaneSpec>> __vector;
       __vector.reserve(__size);
       for (size_t __i = 0; __i < __size; __i++) {
-        auto __element = __result->getElement(__i);
+        auto __element = __input->getElement(__i);
         __vector.push_back(__element->getJHybridFramePlaneSpec());
       }
       return __vector;
-    }();
+    }(__result);
   }
   std::shared_ptr<ArrayBuffer> JHybridFrameSpec::getPixelBuffer() {
     static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JArrayBuffer::javaobject>()>("getPixelBuffer");

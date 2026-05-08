@@ -676,10 +676,10 @@ namespace margelo::nitro::camera::bridge::swift {
     return swiftPart.toUnsafe();
   }
   
-  // pragma MARK: std::function<void(Orientation /* orientation */)>
-  Func_void_Orientation create_Func_void_Orientation(void* NON_NULL swiftClosureWrapper) noexcept {
-    auto swiftClosure = VisionCamera::Func_void_Orientation::fromUnsafe(swiftClosureWrapper);
-    return [swiftClosure = std::move(swiftClosure)](Orientation orientation) mutable -> void {
+  // pragma MARK: std::function<void(CameraOrientation /* orientation */)>
+  Func_void_CameraOrientation create_Func_void_CameraOrientation(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = VisionCamera::Func_void_CameraOrientation::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](CameraOrientation orientation) mutable -> void {
       swiftClosure.call(static_cast<int>(orientation));
     };
   }
@@ -772,6 +772,14 @@ namespace margelo::nitro::camera::bridge::swift {
     auto swiftClosure = VisionCamera::Func_void_std__shared_ptr_HybridRecorderSpec_::fromUnsafe(swiftClosureWrapper);
     return [swiftClosure = std::move(swiftClosure)](const std::shared_ptr<HybridRecorderSpec>& result) mutable -> void {
       swiftClosure.call(result);
+    };
+  }
+  
+  // pragma MARK: std::function<void(const std::string& /* filePath */, RecordingFinishedReason /* reason */)>
+  Func_void_std__string_RecordingFinishedReason create_Func_void_std__string_RecordingFinishedReason(void* NON_NULL swiftClosureWrapper) noexcept {
+    auto swiftClosure = VisionCamera::Func_void_std__string_RecordingFinishedReason::fromUnsafe(swiftClosureWrapper);
+    return [swiftClosure = std::move(swiftClosure)](const std::string& filePath, RecordingFinishedReason reason) mutable -> void {
+      swiftClosure.call(filePath, static_cast<int>(reason));
     };
   }
   

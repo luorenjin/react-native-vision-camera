@@ -12,12 +12,19 @@ class HybridVideoRecorder: HybridRecorderSpec {
   private let videoOutput: AVCaptureMovieFileOutput
   private let queue: DispatchQueue
   private let fileURL: URL
+  private let settings: RecorderSettings
   private var isCancelled = false
 
-  init(videoOutput: AVCaptureMovieFileOutput, queue: DispatchQueue) throws {
+  init(
+    videoOutput: AVCaptureMovieFileOutput,
+    queue: DispatchQueue,
+    fileType: RecorderFileType,
+    settings: RecorderSettings
+  ) throws {
     self.videoOutput = videoOutput
     self.queue = queue
-    self.fileURL = try URL.createTempURL(fileType: .quickTimeMovie)
+    self.fileURL = try URL.createTempURL(fileType: fileType.toUTType())
+    self.settings = settings
     super.init()
   }
 
@@ -41,7 +48,7 @@ class HybridVideoRecorder: HybridRecorderSpec {
   }
 
   func startRecording(
-    onRecordingFinished: @escaping (_ filePath: String) -> Void,
+    onRecordingFinished: @escaping (_ filePath: String, _ reason: RecordingFinishedReason) -> Void,
     onRecordingError: @escaping (_ error: Error) -> Void,
     onRecordingPaused: (() -> Void)?,
     onRecordingResumed: (() -> Void)?
@@ -73,14 +80,14 @@ class HybridVideoRecorder: HybridRecorderSpec {
         },
         onRecordingPaused: onRecordingPaused,
         onRecordingResumed: onRecordingResumed,
-        onRecordingFinished: { url in
+        onRecordingFinished: { url, reason in
           if self.isCancelled {
             // Recording was cancelled - delete the file
             try? FileManager.default.removeItem(at: url)
             return
           }
           // Recording finished!
-          onRecordingFinished(url.absoluteString)
+          onRecordingFinished(url.absoluteString, reason)
         },
         onRecordingError: { error in
           if !isResolved {
@@ -92,6 +99,19 @@ class HybridVideoRecorder: HybridRecorderSpec {
             onRecordingError(error)
           }
         })
+
+      // Apply recording limits. `AVCaptureMovieFileOutput` delivers the file
+      // via the success path when either limit is reached (see `VideoDelegate`).
+      if let maxDuration = self.settings.maxDuration {
+        self.videoOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 600)
+      } else {
+        self.videoOutput.maxRecordedDuration = .invalid
+      }
+      if let maxFileSize = self.settings.maxFileSize {
+        self.videoOutput.maxRecordedFileSize = Int64(maxFileSize)
+      } else {
+        self.videoOutput.maxRecordedFileSize = 0
+      }
 
       // Start recording!
       self.videoOutput.startRecording(to: self.fileURL, recordingDelegate: delegate)

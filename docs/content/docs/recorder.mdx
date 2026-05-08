@@ -16,6 +16,20 @@ const recorder = await videoOutput.createRecorder({
 })
 ```
 
+### Setting maximum duration or file-size
+
+To automatically stop a recording when a certain duration or file-size has been reached, use [`maxDuration`](/api/react-native-vision-camera/interfaces/RecorderSettings#maxduration) or [`maxFileSize`](/api/react-native-vision-camera/interfaces/RecorderSettings#maxfilesize):
+
+```ts
+const videoOutput = ...
+const recorder = await videoOutput.createRecorder({
+  maxDuration: 5,        // 5 seconds
+  maxFileSize: 10000000, // ~10 MB
+})
+```
+
+When the duration or file size has been reached, the [`onRecordingFinished(...)`](/api/react-native-vision-camera/hybrid-objects/Recorder#startrecording) callback will be called with a [`reason`](/api/react-native-vision-camera/type-aliases/RecordingFinishedReason) - either [`'max-duration'`](/api/react-native-vision-camera/type-aliases/RecordingFinishedReason) or [`'max-file-size'`](/api/react-native-vision-camera/type-aliases/RecordingFinishedReason).
+
 ### Starting a Recording
 
 To start a Video Recording, use [`Recorder.startRecording(...)`](/api/react-native-vision-camera/hybrid-objects/Recorder#startrecording), which takes callbacks for recording events:
@@ -23,7 +37,7 @@ To start a Video Recording, use [`Recorder.startRecording(...)`](/api/react-nati
 ```ts
 const recorder = ...
 await recorder.startRecording({
-  (path) => console.log(`Recording finished!`),
+  (path, reason) => console.log(`Recording finished! ${reason}`),
   (error) => console.error(`Recording error!`, error),
   () => console.log(`Recording paused!`),
   () => console.log(`Recording resumed!`)
@@ -68,12 +82,18 @@ Once the Video Recording has been finished, the `onRecordingFinished` callback p
 
 To cancel a Video Recording instead of stopping it, use [`cancelRecording()`](/api/react-native-vision-camera/hybrid-objects/Recorder#cancelrecording), which deletes the file and cleans up state.
 
+```ts
+await recorder.cancelRecording()
+```
+
 ### Interruptions
 
 The [`Recorder`](/api/react-native-vision-camera/hybrid-objects/Recorder) gracefully handles interruptions such as incoming calls, minimizing the app, or pipeline stalls - in this case your [`CameraSession`](/api/react-native-vision-camera/hybrid-objects/CameraSession)'s [`onInterruptionStarted`](/api/react-native-vision-camera/hybrid-objects/CameraSession#addoninterruptionstartedlistener) listener will get called.
 If the Recording has to be paused, the `onRecordingPaused` callback previously passed to the [`Recorder.startRecording(...)`](/api/react-native-vision-camera/hybrid-objects/Recorder#startrecording) function will be called.
 
 For incoming calls, the Recording doesn't have to be paused - only the audio track will be disabled, while video may continue to record.
+
+By default, the [`CameraVideoOutput`](/api/react-native-vision-camera/hybrid-objects/CameraVideoOutput) stops an active recording when its input [`CameraDevice`](/api/react-native-vision-camera/hybrid-objects/CameraDevice) changes (e.g. when flipping from the [`'front'`](/api/react-native-vision-camera/type-aliases/CameraPosition) to the [`'back'`](/api/react-native-vision-camera/type-aliases/CameraPosition) Camera) - to continue recording in this case, create [a Persistent Video Output](video-output#persistent-video-outputs) instead.
 
 ### Don't re-use a `Recorder`
 

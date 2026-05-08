@@ -8,11 +8,11 @@ import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.Recorder
 import androidx.camera.video.VideoCapture
 import com.margelo.nitro.NitroModules
+import com.margelo.nitro.camera.CameraOrientation
 import com.margelo.nitro.camera.HybridCameraVideoOutputSpec
 import com.margelo.nitro.camera.HybridRecorderSpec
 import com.margelo.nitro.camera.MediaType
 import com.margelo.nitro.camera.MirrorMode
-import com.margelo.nitro.camera.Orientation
 import com.margelo.nitro.camera.RecorderSettings
 import com.margelo.nitro.camera.Size
 import com.margelo.nitro.camera.TargetStabilizationMode
@@ -37,7 +37,7 @@ class HybridVideoOutput(
 ) : HybridCameraVideoOutputSpec(),
   NativeCameraOutput {
   override val mediaType: MediaType = MediaType.VIDEO
-  override var outputOrientation: Orientation = Orientation.UP
+  override var outputOrientation: CameraOrientation = CameraOrientation.UP
     set(value) {
       field = value
       videoCapture?.targetRotation = value.surfaceRotation
@@ -157,6 +157,15 @@ class HybridVideoOutput(
               // location={..} metadata
               val location = settings.location as? NativeLocation ?: throw Error("Location is not of type `NativeLocation`!")
               setLocation(location.location)
+            }
+            if (settings.maxDuration != null) {
+              // maxDuration={..} (milliseconds)
+              val maxDurationMs = settings.maxDuration * 1000.0
+              setDurationLimitMillis(maxDurationMs.toLong())
+            }
+            if (settings.maxFileSize != null) {
+              // maxFileSize={..} (bytes)
+              setFileSizeLimit(settings.maxFileSize.toLong())
             }
           }.build()
       var pendingRecording = videoOutput.prepareRecording(context, fileOutputOptions)

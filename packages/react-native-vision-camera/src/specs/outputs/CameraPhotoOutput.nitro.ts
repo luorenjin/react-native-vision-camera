@@ -139,12 +139,18 @@ export interface CapturePhotoSettings {
    * Configures the {@linkcode FlashMode} for this Photo
    * capture.
    *
+   * @throws If {@linkcode FlashMode} is `'on'`, but
+   * the {@linkcode CameraDevice} does not have a
+   * flash - see {@linkcode CameraDevice.hasFlash}
    * @default 'off'
    */
   flashMode?: FlashMode
   /**
    * Enables or disables the system shutter sound.
    * The shutter sound is fired exactly when a photo will be captured.
+   *
+   * The OS may choose to override this behaviour, e.g. if
+   * regional sound-suppression settings are applied.
    *
    * @default true
    */
@@ -273,12 +279,19 @@ export interface CameraPhotoOutput extends CameraOutput {
    * as CameraX does not properly support in-memory Photos for formats like RAW yet.
    * See https://issuetracker.google.com/u/3/issues/482079661 for more information.
    *
+   * @note
+   * The {@linkcode Photo} has to be `dispose()`'d after it
+   * is no longer used, as otherwise the JS Runtime might not
+   * immediately delete it, possibly exhausting system resources.
+   *
    * @example
    * ```ts
    * const photo = await photoOutput.capturePhoto(
    *   { flashMode: 'on' },
    *   {}
    * )
+   * // ...
+   * photo.dispose()
    * ```
    */
   capturePhoto(
@@ -291,7 +304,7 @@ export interface CameraPhotoOutput extends CameraOutput {
    * using the given {@linkcode CapturePhotoSettings}.
    * @example
    * ```ts
-   * const photoFilePath = await photoOutput.capturePhoto(
+   * const photoFile = await photoOutput.capturePhotoToFile(
    *   { flashMode: 'on' },
    *   {}
    * )
